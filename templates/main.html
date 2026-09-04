@@ -1,0 +1,138 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block content %}
+
+<div class="music-player">
+    {% for item in page_obj %}
+        <!-- Header -->
+        <div class="player-header">
+            <div class="music-icon">
+                <i class="fa fa-music"></i>
+            </div>
+            <div>
+                <span class="now-playing b">
+                   @sh!sh
+                </span>
+                <p>Music Player</p>
+            </div>
+        </div>
+
+        <!-- Album Artwork -->
+        <div class="cover">
+            {% if item.image %}
+                <img src="{{ item.image.url }}" alt="{{ item.title }}" class="album-art">
+            {% else %}
+                <div class="album-placeholder">
+                    <i class="fa fa-music"></i>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Song Information -->
+        <div class="title">
+            <h3>{{ item.artist }}</h3>
+            <h1>{{ item.title }}</h1>
+        </div>
+
+        <!-- Audio -->
+        <audio id="fc-media" preload="metadata" class="native-audio">
+            <source src="{% if item.audio_file %}{{ item.audio_file.url }}{% else %}{{ item.audio_link }}{% endif %}" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="time-display">
+                <span id="currentTime">0:00</span>
+                <span id="duration">0:00</span>
+            </div>
+            <input type="range" id="progressBar" min="0" max="100" value="0" step="0.1">
+        </div>
+
+        <!-- Player Controls -->
+        <div class="player-controls">
+
+            <!-- PREVIOUS -->
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.number|add:'-1' }}" class="control-btn" title="Previous Song">
+                    <i class="fa fa-step-backward"></i>
+                </a>
+            {% else %}
+                <button type="button" class="control-btn disabled-btn" disabled title="No Previous Song">
+                    <i class="fa fa-step-backward"></i>
+                </button>
+            {% endif %}
+
+            <!-- REWIND -->
+            <button type="button" class="control-btn skip-btn" id="rewindBtn" title="Rewind 10 seconds">
+                <i class="fa fa-undo"></i>
+                <span>10</span>
+            </button>
+
+            <!-- PLAY / PAUSE -->
+            <button type="button" class="control-btn play-btn" id="playPauseBtn" title="Play / Pause">
+                <i class="fa fa-play" id="playIcon"></i>
+                <i class="fa fa-pause" id="pauseIcon" style="display:none;"></i>
+            </button>
+
+            <!-- FORWARD -->
+            <button type="button" class="control-btn skip-btn" id="forwardBtn" title="Forward 10 seconds">
+                <i class="fa fa-repeat"></i>
+                <span>10</span>
+            </button>
+
+            <!-- NEXT -->
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.number|add:'1' }}" class="control-btn" title="Next Song">
+                    <i class="fa fa-step-forward"></i>
+                </a>
+            {% else %}
+                <button type="button" class="control-btn disabled-btn" disabled title="No Next Song">
+                    <i class="fa fa-step-forward"></i>
+                </button>
+            {% endif %}
+        </div>
+
+        <!-- Volume -->
+        <div class="volume-container">
+            <i class="fa fa-volume-up" id="volumeIcon"></i>
+            <input type="range" id="volumeSlider" min="0" max="100" value="80">
+        </div>
+
+
+        <!-- Page Navigation -->
+        <div class="song-navigation">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.number|add:'-1' }}" class="nav-button">
+                    <i class="fa fa-chevron-left"></i>Previous
+                </a>
+            {% else %}
+                <span class="nav-button nav-disabled">
+                    <i class="fa fa-chevron-left"></i>
+                    Previous
+                </span>
+            {% endif %}
+
+            <span class="page-info">Song {{ page_obj.number }}of{{ page_obj.paginator.num_pages }}</span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.number|add:'1' }}" class="nav-button"> Next
+                    <i class="fa fa-chevron-right"></i>
+                </a>
+
+            {% else %}
+                <span class="nav-button nav-disabled"> Next
+                    <i class="fa fa-chevron-right"></i>
+                </span>
+            {% endif %}
+        </div>
+
+    {% empty %}
+        <div class="no-songs">
+            <i class="fa fa-music"></i>
+            <h2>No Songs Available</h2>
+            <p>Please add some songs to your database.</p>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
